@@ -1,4 +1,4 @@
-.PHONY: build run stop send-event clean
+.PHONY: build run stop send-event clean lint format docker-lint
 
 # Variables
 CONTAINER_NAME = sqs-lambda-processor
@@ -44,4 +44,18 @@ help:
 	@echo "  make stop        - Stop and remove the container"
 	@echo "  make send-event  - Send a test event to the running container"
 	@echo "  make clean       - Remove the container and image"
-	@echo "  make help        - Show this help message" 
+	@echo "  make help        - Show this help message"
+
+lint:
+	@echo "Running pylint..."
+	@pylint lambda_function.py
+
+format:
+	@echo "Running black formatter..."
+	@black lambda_function.py
+
+docker-lint:
+	@docker run --rm --entrypoint pylint -v $(PWD):/var/task -w /var/task $(CONTAINER_NAME) lambda_function.py
+
+docker-format:
+	@docker run --rm -v $(PWD):/var/task -w /var/task $(CONTAINER_NAME) black lambda_function.py 

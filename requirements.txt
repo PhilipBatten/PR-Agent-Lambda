@@ -2,3 +2,5 @@ boto3==1.33.6
 aws-lambda-powertools==2.32.0
 requests==2.31.0
 pr-agent==0.2.7
+pylint==3.0.3
+black==24.1.1

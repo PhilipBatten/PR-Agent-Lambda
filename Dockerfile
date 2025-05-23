@@ -14,8 +14,9 @@ COPY requirements.txt ${LAMBDA_TASK_ROOT}
 # Install the specified packages
 RUN pip install -r requirements.txt
 
-# Copy function code
+# Copy function code and linter config
 COPY lambda_function.py ${LAMBDA_TASK_ROOT}
+COPY .pylintrc ${LAMBDA_TASK_ROOT}
 
 # Set the CMD to your handler
 CMD [ "lambda_function.lambda_handler" ] 
