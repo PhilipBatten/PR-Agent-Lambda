@@ -134,6 +134,10 @@ resource "aws_lambda_function" "main" {
   environment {
     variables = {
       LOG_LEVEL = "INFO"
+      PR_AGENT_PROVIDER = "github"
+      # These will be set via AWS Secrets Manager or Parameter Store in production
+      PR_AGENT_USER_TOKEN = var.pr_agent_user_token
+      PR_AGENT_OPENAI_KEY = var.pr_agent_openai_key
     }
   }
 }

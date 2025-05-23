@@ -1,4 +1,12 @@
-FROM public.ecr.aws/lambda/python:3.11
+FROM public.ecr.aws/lambda/python:3.12
+
+# Install git
+RUN dnf update -y && \
+    dnf install -y git && \
+    dnf clean all
+
+# Set git environment variables
+ENV GIT_PYTHON_REFRESH=quiet
 
 # Copy requirements.txt
 COPY requirements.txt ${LAMBDA_TASK_ROOT}

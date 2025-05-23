@@ -3,7 +3,7 @@
         {
             "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
             "receiptHandle": "MessageReceiptHandle",
-            "body": "{\"message\": \"Hello from SQS!\"}",
+            "body": "{\"pr_url\": \"https://github.com/Codium-ai/pr-agent/pull/809\", \"commands\": [\"/review\", \"/describe\", \"/improve\"]}",
             "attributes": {
                 "ApproximateReceiveCount": "1",
                 "SentTimestamp": "1523232000000",

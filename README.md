@@ -1,13 +1,13 @@
 # AWS Lambda SQS Processor
 
-This project contains a Python-based AWS Lambda function that processes messages from an Amazon SQS queue.
+This project contains a Python-based AWS Lambda function that processes messages from an Amazon SQS queue and runs PR agent analysis on pull requests.
 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
 1. Docker
-2. Python 3.11 or later
+2. Python 3.12 or later
 3. Make
 4. jq (for JSON formatting in test output)
 5. Terraform (for AWS deployment)
@@ -28,10 +28,10 @@ brew install docker
 #### Python
 ```bash
 # Ubuntu/Debian
-sudo apt-get install python3.11 python3.11-venv
+sudo apt-get install python3.12 python3.12-venv
 
 # macOS
-brew install python@3.11
+brew install python@3.12
 ```
 
 #### Make
@@ -74,8 +74,8 @@ brew install awscli
 
 ## Project Structure
 
-- `lambda_function.py`: Main Lambda handler code
-- `requirements.txt`: Python dependencies
+- `lambda_function.py`: Main Lambda handler code that processes SQS events and runs PR agent
+- `requirements.txt`: Python dependencies including pr-agent
 - `Dockerfile`: Container definition for the Lambda function
 - `test_locally.py`: Script for local testing
 - `test_events/`: Directory containing test event payloads
@@ -84,6 +84,21 @@ brew install awscli
   - `main.tf`: Main infrastructure configuration
   - `variables.tf`: Variable definitions
   - `outputs.tf`: Output values
+
+## Message Format
+
+The Lambda function expects SQS messages in the following format:
+
+```json
+{
+    "pr_number": 123,
+    "repository": "owner/repo",
+    "action": "opened",
+    "title": "Add new feature",
+    "body": "This PR adds a new feature",
+    "user": "username"
+}
+```
 
 ## Deployment
 
@@ -127,11 +142,11 @@ docker push $(terraform output -raw ecr_repository_url):latest
 
 ### Testing the Deployment
 
-1. Send a test message to the SNS topic:
+1. Send a test PR message to the SNS topic:
 ```bash
 aws sns publish \
   --topic-arn $(terraform output -raw sns_topic_arn) \
-  --message '{"message": "Hello from SNS!"}'
+  --message '{"pr_number": 123, "repository": "owner/repo", "action": "opened", "title": "Add new feature", "body": "This PR adds a new feature", "user": "username"}'
 ```
 
 2. Check CloudWatch Logs for the Lambda function execution:
@@ -193,53 +208,3 @@ pip install -r requirements.txt
 ```bash
 python test_locally.py
 ```
-
-The test script will:
-- Start the Lambda container locally
-- Send a test SQS event to the function
-- Display the function's response
-- Clean up by stopping the container
-
-You can modify the test event in `test_events/sqs_event.json` to test different scenarios.
-
-## Setup and Deployment
-
-1. Build the Docker image:
-```bash
-docker build -t sqs-lambda-processor .
-```
-
-2. Test locally (optional):
-```bash
-docker run -p 9000:8080 sqs-lambda-processor
-```
-
-3. Push to Amazon ECR:
-```bash
-# Create ECR repository (if not exists)
-aws ecr create-repository --repository-name sqs-lambda-processor
-
-# Login to ECR
-aws ecr get-login-password --region <your-region> | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.<your-region>.amazonaws.com
-
-# Tag and push the image
-docker tag sqs-lambda-processor:latest <your-account-id>.dkr.ecr.<your-region>.amazonaws.com/sqs-lambda-processor:latest
-docker push <your-account-id>.dkr.ecr.<your-region>.amazonaws.com/sqs-lambda-processor:latest
-```
-
-4. Create Lambda Function:
-   - Create a new Lambda function using the container image
-   - Configure the SQS trigger in the Lambda function settings
-   - Set appropriate IAM roles and permissions
-
-## Required IAM Permissions
-
-The Lambda function requires the following permissions:
-- `sqs:ReceiveMessage`
-- `sqs:DeleteMessage`
-- `sqs:GetQueueAttributes`
-- `sqs:ChangeMessageVisibility`
-
-## Environment Variables
-
-No environment variables are required by default, but you can add them as needed for your specific use case.
