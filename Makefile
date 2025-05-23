@@ -1,4 +1,4 @@
-.PHONY: build run stop send-event clean lint format docker-lint
+.PHONY: build run stop send-event clean lint format docker-lint docker-format
 
 # Variables
 CONTAINER_NAME = sqs-lambda-processor
@@ -58,4 +58,4 @@ docker-lint:
 	@docker run --rm --entrypoint pylint -v $(PWD):/var/task -w /var/task $(CONTAINER_NAME) lambda_function.py
 
 docker-format:
-	@docker run --rm -v $(PWD):/var/task -w /var/task $(CONTAINER_NAME) black lambda_function.py 
+	@docker run --rm --entrypoint black -v $(PWD):/var/task -w /var/task $(CONTAINER_NAME) lambda_function.py 
