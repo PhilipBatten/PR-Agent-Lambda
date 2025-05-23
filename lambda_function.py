@@ -3,6 +3,13 @@ import os
 import subprocess
 from typing import Dict, List, Any, Optional
 
+# Load .env if it exists (for local development)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 def configure_pr_agent() -> None:
     """Configure PR agent environment variables."""
     os.environ["PR_AGENT_PROVIDER"] = "github"
