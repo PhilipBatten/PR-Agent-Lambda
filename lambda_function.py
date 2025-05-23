@@ -42,12 +42,12 @@ def run_pr_agent_command(pr_url: str, command: str) -> Dict[str, Any]:
             "output": None,
             "error": f"Command failed: {e.stderr}"
         }
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         return {
             "status": "error",
             "command": command,
             "output": None,
-            "error": f"Unexpected error: {str(e)}"
+            "error": f"Process error: {str(e)}"
         }
 
 def process_pr_commands(pr_url: str, commands: List[str]) -> List[Dict[str, Any]]:
@@ -91,7 +91,10 @@ def lambda_handler(event: Dict[str, Any], _: Any) -> Dict[str, Any]:
             raise ValueError("No body found in record")
             
         # Parse message body
-        message_body = json.loads(record["body"])
+        try:
+            message_body = json.loads(record["body"])
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in message body: {str(e)}") from e
         
         # Extract PR URL and commands
         pr_url = message_body.get("pr_url")
@@ -113,11 +116,19 @@ def lambda_handler(event: Dict[str, Any], _: Any) -> Dict[str, Any]:
             })
         }
         
-    except Exception as e:
+    except ValueError as e:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "message": "Invalid request",
+                "error": str(e)
+            })
+        }
+    except (OSError, subprocess.SubprocessError) as e:
         return {
             "statusCode": 500,
             "body": json.dumps({
-                "message": "Error processing PR commands",
+                "message": "System error",
                 "error": str(e)
             })
         } 
