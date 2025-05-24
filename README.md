@@ -31,7 +31,26 @@ This AWS Lambda function processes messages from an SNS topic, triggering a revi
      ```json
      {
        "pr_url": "https://github.com/your-repo/your-pr",
-       "commands": ["/review", "/describe", "/improve"]
+       "commands": ["/review", "/describe", "/improve"],
+       "openai_key": "optional-openai-key-override",
+       "openai_model": "optional-model-override"
+     }
+     ```
+   - The `openai_key` and `openai_model` fields are optional. If not provided, the function will use the values from environment variables.
+   - Example with overrides:
+     ```json
+     {
+       "pr_url": "https://github.com/your-repo/your-pr",
+       "commands": ["/review"],
+       "openai_key": "sk-custom-key",
+       "openai_model": "gpt-4"
+     }
+     ```
+   - Example without overrides:
+     ```json
+     {
+       "pr_url": "https://github.com/your-repo/your-pr",
+       "commands": ["/review"]
      }
      ```
 
