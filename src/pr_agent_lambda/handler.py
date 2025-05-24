@@ -34,11 +34,11 @@ class PRAgentHandler:
         settings.set("github.user_token", user_token)
 
     def run_command(
-        self, 
-        pr_url: str, 
-        command: str, 
+        self,
+        pr_url: str,
+        command: str,
         openai_key: Optional[str] = None,
-        openai_model: Optional[str] = None
+        openai_model: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Run a PR agent command and return the result.
