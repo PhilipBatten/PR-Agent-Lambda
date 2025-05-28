@@ -25,4 +25,4 @@ jobs:
         
     - name: Run tests
       run: |
-        PYTHONPATH=$PYTHONPATH:src pytest tests/ -v --cov=src 
+        PYTHONPATH=$PYTHONPATH:services/agent/src pytest services/agent/tests/ -v --cov=services/agent/src 

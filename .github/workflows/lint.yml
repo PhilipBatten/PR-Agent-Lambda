@@ -25,8 +25,8 @@ jobs:
         
     - name: Run pylint
       run: |
-        pylint --ignore-imports=yes src/pr_agent_lambda/*.py
+        pylint --rcfile=services/agent/.pylintrc --ignore-imports=yes services/agent/src/pr_agent_lambda/*.py
         
     - name: Run black
       run: |
-        black --check src/pr_agent_lambda/*.py 
+        black --check services/agent/src/pr_agent_lambda/*.py 
